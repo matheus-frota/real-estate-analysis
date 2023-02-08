@@ -44,9 +44,12 @@ def get_all_links_real_estates(pages):
 
 
 def get_all_info_real_estate(urls):
+    infos = {}
     for url in urls:
         content = get_content(url)
-
+        titulo = content.find('h1', class_='display-6').text
+        print(titulo)
+        break
 
 def crawler():
     content = get_content(_URL)
