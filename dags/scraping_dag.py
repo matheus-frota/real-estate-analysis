@@ -4,6 +4,8 @@ import pendulum
 from airflow.decorators import dag, task
 from airflow.operators.bash import BashOperator
 
+from mgf_imoveis import crawler
+
 @dag(
     schedule=None,
     dag_id='crawlers_real_estate',
@@ -18,19 +20,12 @@ def get_data_real_estate():
     Essa dag é responsável por raspar os dados de imovies e salva-los
     na camada raw do data lake.
     """
-    @task.virtualenv(
-        task_id="virtualenv_python", requirements=["requests"], system_site_packages=False
-    )
+    # @task.virtualenv(
+    #     task_id="virtualenv_python", requirements=["requests", "beautifulsoup4"], system_site_packages=False
+    # )
+    @task()
     def get_data_mgf_imoveis():
-        """
-        ### Mgf Imovies
-        Raspagem de dados do site da mgf imoveis.
-        """
-        import requests
 
-        url = 'https://www.mgfimoveis.com.br/aluguel/apartamento/ce-sobral'
-
-        response = requests.get(url)
-        print(response.status_code)
+        print(crawler())
     get_data_mgf_imoveis()
 get_data_real_estate()
