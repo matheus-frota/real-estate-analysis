@@ -6,6 +6,7 @@ _URL = 'https://www.mgfimoveis.com.br/aluguel/apartamento/ce-sobral'
 
 
 def get_content(url):
+    """ Retorna o conteúdo da url passada como parâmetro. """
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -45,70 +46,76 @@ def get_all_links_real_estates(pages):
 
 
 def get_cond_price(content):
+    """ Retorna o valor do preço que será pago de condomínio. """
     try:
         value = content.find('p', class_='pl-4').text
         if 'CONDOM' in value:
             return value
         return None
-    except AttributeError:
+    except (AttributeError, IndexError):
         return None
 
 
 def get_total_price(content):
+    """ Retorna o valor total do aluguel. """
     try:
         value = content.find('p', class_='h5 mt-4').text
         if 'TOTAL' in value:
             return value
         return None
-    except AttributeError:
+    except (AttributeError, IndexError):
         return None
 
 
 def get_bedroom_qty(content):
+    """ Retorna a quantidade de quartos. """
     try:
         value = [i.text for i in content.find_all('h4', class_='fw-light mb-4')][0]
         if 'Dormitório' in value:
             return value
         return None
-    except AttributeError:
+    except (AttributeError, IndexError):
         return None
 
 
 def get_bathroom_qty(content):
+    """ Retorna a quantidade de banheiros. """
     try:
         value = [i.text for i in content.find_all('h4', class_='fw-light mb-4')][1]
         if 'Banheiro' in value:
             return value
         return None
-    except AttributeError:
+    except (AttributeError, IndexError):
         return None
 
 
 def get_garage_qty(content):
+    """ Retorna a quantidade de espaços na garagem. """
     try:
         value = [i.text for i in content.find_all('h4', class_='fw-light mb-4')][2]
         if 'garagem' in value:
             return value
         return None
-    except AttributeError:
+    except (AttributeError, IndexError):
         return None
 
 
 def get_total_area(content):
+    """ Retorna o tamanho total do apartamento. """
     try:
         value = [i.text for i in content.find_all('h4', class_='fw-light mb-4')][3]
         if 'Área' in value:
             return value
         return None
-    except AttributeError:
+    except (AttributeError, IndexError):
         return None
 
 
 def get_all_info_real_estate(urls):
+    """ Pega todas as informações sobre o apartamento. """
     infos = []
     for url in urls:
         content = get_content(url)
-        print(url)
         info = {
             'codigo': content.find('p', class_='fs-6 fw-light badge bg-secondary me-2 mb-2 mb-sm-0').text,
             'titulo': content.find('h1', class_='display-6').text,
@@ -127,12 +134,11 @@ def get_all_info_real_estate(urls):
     return infos
 
 def crawler():
+    """ Função principal que retorna as informações de todos os apartamentos. """
     content = get_content(_URL)
     urls = get_all_links_real_estates([content])
     infos = get_all_info_real_estate(urls)
-
-    with open('data.json', 'w') as f:
-        json.dump(infos, f)
+    return infos
 
 if __name__ == '__main__':
-    crawler()
+    print(len(crawler()))
