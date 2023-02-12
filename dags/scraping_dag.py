@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import pendulum
 
@@ -25,7 +26,14 @@ def get_data_real_estate():
     # )
     @task()
     def get_data_mgf_imoveis():
-
-        print(crawler())
+        """ Recupera informações do site da MgfImoveis. """
+        re_list = crawler()
+        dt_now = pendulum.now("America/Sao_Paulo").strftime('%Y-%m-%d %H:%M:%S')
+        if re_list != []:
+            for real_estate in re_list:
+                real_estate['created_date'] = dt_now
+            return re_list[0]
+        else:
+            return None
     get_data_mgf_imoveis()
 get_data_real_estate()
